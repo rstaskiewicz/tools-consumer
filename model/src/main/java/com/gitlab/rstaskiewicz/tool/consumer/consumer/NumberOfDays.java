@@ -3,7 +3,7 @@ package com.gitlab.rstaskiewicz.tool.consumer.consumer;
 import lombok.Value;
 
 @Value
-class NumberOfDays {
+public class NumberOfDays {
 
     int days;
 
@@ -14,7 +14,7 @@ class NumberOfDays {
         this.days = days;
     }
 
-    static NumberOfDays of(int days) {
+    public static NumberOfDays of(int days) {
         return new NumberOfDays(days);
     }
 }

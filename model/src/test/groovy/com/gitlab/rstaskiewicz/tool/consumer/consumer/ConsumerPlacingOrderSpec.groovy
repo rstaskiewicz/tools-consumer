@@ -8,16 +8,15 @@ import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerEvent.Order
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerEvent.OrderPlacingFailed
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.anyPaymentDeadline
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithOverduePaymentsAt
-import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithPlacedOrders
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithMaxNumberOfPlacedOrdersPerDay
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.anyOrderId
 import static com.gitlab.rstaskiewicz.tool.consumer.salesbranch.SalesBranchFixture.anyBranchId
-import static java.util.Collections.emptySet
 
 class ConsumerPlacingOrderSpec extends Specification {
 
     def 'consumer cannot place more than 3 orders in one day'() {
         given:
-            Consumer consumer = consumerWithPlacedOrders(orders)
+            Consumer consumer = consumerWithMaxNumberOfPlacedOrdersPerDay(orders)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
                     anyOrderId(), anyBranchId(), anyPaymentDeadline())
@@ -30,7 +29,7 @@ class ConsumerPlacingOrderSpec extends Specification {
 
     def 'consumer can place an order when he did not place more than 2 orders in one day'() {
         given:
-            Consumer consumer = consumerWithPlacedOrders(orders)
+            Consumer consumer = consumerWithMaxNumberOfPlacedOrdersPerDay(orders)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
                     anyOrderId(), anyBranchId(), anyPaymentDeadline())

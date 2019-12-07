@@ -36,6 +36,14 @@ class ConsumerFixture {
                 allCurrentPolicies())
     }
 
+    static Consumer consumerWithMaxNumberOfPlacedOrdersPerDay() {
+        return new Consumer(
+                consumerInformation(anyConsumerId()),
+                new OverduePayments(HashMap.empty()),
+                placedOrders(ConsumerOrders.MAX_NUMBER_OF_DAILY_HOLDS),
+                allCurrentPolicies())
+    }
+
     static Consumer consumerWithPlacedOrders(int numberOfOrders) {
         return new Consumer(
                 consumerInformation(anyConsumerId()),

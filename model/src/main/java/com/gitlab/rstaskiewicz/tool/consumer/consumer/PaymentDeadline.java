@@ -7,11 +7,11 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Value
-class PaymentDeadline {
+public class PaymentDeadline {
 
     @NonNull Instant when;
 
-    static PaymentDeadline forNumberOfDays(NumberOfDays days) {
+    public static PaymentDeadline forNumberOfDays(NumberOfDays days) {
         Instant till = Instant.now().plus(Duration.ofDays(days.getDays()));
         return new PaymentDeadline(till);
     }

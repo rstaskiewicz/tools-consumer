@@ -1,5 +1,5 @@
 package com.gitlab.rstaskiewicz.tool.consumer.consumer;
 
-enum OrderCancellingReason {
+public enum OrderCancellingReason {
     PlacingFailed, CancelledByConsumer
 }
