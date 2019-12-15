@@ -7,12 +7,19 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Value
-public class PaymentDeadline {
+class PaymentDeadline {
 
-    @NonNull Instant when;
+    @NonNull Instant till;
 
-    public static PaymentDeadline forNumberOfDays(NumberOfDays days) {
-        Instant till = Instant.now().plus(Duration.ofDays(days.getDays()));
-        return new PaymentDeadline(till);
+    private PaymentDeadline(Instant orderTime, Instant paymentTill) {
+        if (paymentTill.isBefore(orderTime)) {
+            throw new IllegalStateException("Close-ended duration must be valid");
+        }
+        this.till = paymentTill;
+    }
+
+    public static PaymentDeadline forNumberOfDays(NumberOfDays days, OrderTime orderTime) {
+        Instant paymentTill = orderTime.getWhen().plus(Duration.ofDays(days.getDays()));
+        return new PaymentDeadline(orderTime.getWhen(), paymentTill);
     }
 }

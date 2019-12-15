@@ -8,18 +8,22 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+import java.time.Instant;
+
 import static lombok.AccessLevel.PACKAGE;
 
 @Value
 @EqualsAndHashCode(of = "orderId")
 @RequiredArgsConstructor(access = PACKAGE)
-public class CompletedOrder implements Order {
+public class PaidOrder implements Order {
 
     @NonNull OrderId orderId;
 
-    @NonNull SalesBranchId salesBranchId;
+    @NonNull ConsumerId byConsumer;
 
-    @NonNull ConsumerId consumer;
+    @NonNull SalesBranchId placedAt;
+
+    @NonNull Instant paidWhen;
 
     @NonNull Version version;
 }

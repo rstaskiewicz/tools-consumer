@@ -41,15 +41,21 @@ public interface ConsumerEvent extends DomainEvent {
         @NonNull UUID consumerId;
         @NonNull UUID orderId;
         @NonNull UUID salesBranchId;
+        @NonNull Instant orderedAt;
         @NonNull Instant paymentTill;
 
-        static OrderPlaced now(ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId, PaymentDeadline paymentDeadline) {
+        static OrderPlaced now(ConsumerId consumerId,
+                               OrderId orderId,
+                               SalesBranchId salesBranchId,
+                               OrderTime orderTime,
+                               PaymentDeadline paymentDeadline) {
             return new OrderPlaced(
                     Instant.now(),
                     consumerId.getId(),
                     orderId.getId(),
                     salesBranchId.getId(),
-                    paymentDeadline.getWhen());
+                    orderTime.getWhen(),
+                    paymentDeadline.getTill());
         }
     }
 
@@ -119,9 +125,9 @@ public interface ConsumerEvent extends DomainEvent {
         @NonNull UUID consumerId;
         @NonNull UUID orderId;
         @NonNull UUID salesBranchId;
-        @NonNull OrderCancellingReason reason;
+        @NonNull CancellationReason reason;
 
-        static OrderCanceled now(ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId, OrderCancellingReason reason) {
+        static OrderCanceled now(ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId, CancellationReason reason) {
             return new OrderCanceled(
                     Instant.now(),
                     consumerId.getId(),

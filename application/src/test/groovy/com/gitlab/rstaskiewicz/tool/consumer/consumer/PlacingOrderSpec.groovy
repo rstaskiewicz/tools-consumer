@@ -7,7 +7,11 @@ import io.vavr.control.Option
 import io.vavr.control.Try
 import spock.lang.Specification
 
-import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.*
+import java.time.Instant
+
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.anyConsumerId
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithMaxNumberOfPlacedOrdersPerDay
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithPlacedOrder
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.anyOrderId
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.placedOrder
 import static com.gitlab.rstaskiewicz.tool.consumer.salesbranch.SalesBranchFixture.anyBranchId
@@ -66,7 +70,7 @@ class PlacingOrderSpec extends Specification {
     }
 
     PlaceOrderCommand command() {
-        return new PlaceOrderCommand(consumerId, anyBranchId(), anyOrderId(), 3)
+        return new PlaceOrderCommand(consumerId, anyBranchId(),anyOrderId(),  Instant.now(), 3)
     }
 
     void persistedConsumerWithPlacedOrder() {

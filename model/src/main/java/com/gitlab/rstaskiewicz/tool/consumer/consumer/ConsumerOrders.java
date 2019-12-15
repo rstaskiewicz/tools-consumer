@@ -2,16 +2,16 @@ package com.gitlab.rstaskiewicz.tool.consumer.consumer;
 
 import com.gitlab.rstaskiewicz.tool.consumer.order.OrderId;
 import com.gitlab.rstaskiewicz.tool.consumer.order.PlacedOrder;
-import io.vavr.collection.HashSet;
-import io.vavr.collection.Map;
-import io.vavr.collection.Set;
-import io.vavr.control.Option;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
-import static java.util.function.Function.identity;
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toSet;
 
 @Value
 class ConsumerOrders {
@@ -21,14 +21,15 @@ class ConsumerOrders {
     Map<LocalDate, Set<ConsumerOrder>> placedOrders;
 
     boolean contains(@NonNull PlacedOrder placedOrder) {
-        var order = new ConsumerOrder(placedOrder.getOrderId(), placedOrder.getSalesBranchId());
-        return placedOrders.values()
-                .flatMap(identity())
+        var order = new ConsumerOrder(placedOrder.getOrderId(), placedOrder.getPlacedAt());
+        return placedOrders.values().stream()
+                .flatMap(Collection::stream)
+                .collect(toSet())
                 .contains(order);
     }
 
     int countToday() {
-        return placedOrders.getOrElse(LocalDate.now(), HashSet.empty()).size();
+        return placedOrders.getOrDefault(LocalDate.now(), emptySet()).size();
     }
 
     boolean reachedMaximumDailyOrdersAfterPlacing(OrderId order) {

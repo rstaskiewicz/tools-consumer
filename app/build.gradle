@@ -1,6 +1,10 @@
 apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 
+mainClassName = 'com.gitlab.rstaskiewicz.tool.consumer.ConsumerApplication'
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation project(':infrastructure')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }

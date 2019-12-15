@@ -1,6 +1,7 @@
 package com.gitlab.rstaskiewicz.tool.consumer.order;
 
 import com.gitlab.rstaskiewicz.tool.consumer.common.aggregates.Version;
+import com.gitlab.rstaskiewicz.tool.consumer.consumer.CancellationReason;
 import com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerId;
 import com.gitlab.rstaskiewicz.tool.consumer.salesbranch.SalesBranchId;
 import lombok.EqualsAndHashCode;
@@ -17,9 +18,11 @@ public class CancelledOrder implements Order {
 
     @NonNull OrderId orderId;
 
-    @NonNull SalesBranchId salesBranchId;
+    @NonNull ConsumerId byConsumer;
 
-    @NonNull ConsumerId consumer;
+    @NonNull SalesBranchId placedAt;
+
+    @NonNull CancellationReason cancelledWhy;
 
     @NonNull Version version;
 }

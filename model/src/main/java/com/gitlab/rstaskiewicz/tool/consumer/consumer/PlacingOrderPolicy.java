@@ -16,7 +16,7 @@ interface PlacingOrderPolicy extends Function2<Consumer, SalesBranchId, Either<R
 
     PlacingOrderPolicy overduePaymentsRejection = (Consumer consumer, SalesBranchId salesBranchId) -> {
         if (consumer.overduePaymentsAt(salesBranchId) >= MAX_COUNT_OF_OVERDUE_PAYMENTS_AT_BRANCH) {
-            return left(Rejection.withReason(("Consumer cannot place order in sales branch when there are overdue payments")));
+            return left(Rejection.withReason(("Consumer cannot place order at sales branch when there are overdue payments")));
         }
         return right(new Allowance());
     };

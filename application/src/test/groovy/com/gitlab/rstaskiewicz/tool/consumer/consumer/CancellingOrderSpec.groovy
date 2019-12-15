@@ -2,20 +2,14 @@ package com.gitlab.rstaskiewicz.tool.consumer.consumer
 
 import com.gitlab.rstaskiewicz.tool.consumer.common.aggregates.AggregateRootNotFoundException
 import com.gitlab.rstaskiewicz.tool.consumer.common.commands.Result
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.CancelOrderCommand
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.CancelingOrder
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.Consumer
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerEvent
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerId
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.Consumers
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.FindPlacedOrder
-import com.gitlab.rstaskiewicz.tool.consumer.consumer.OrderCancellingReason
 import com.gitlab.rstaskiewicz.tool.consumer.order.PlacedOrder
 import io.vavr.control.Option
 import io.vavr.control.Try
 import spock.lang.Specification
 
-import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.*
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.anyConsumerId
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithPlacedOrder
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.regularConsumer
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.anyOrderId
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.placedOrder
 
@@ -24,8 +18,8 @@ class CancellingOrderSpec extends Specification {
     PlacedOrder placedOrder = placedOrder()
     ConsumerId consumerId = anyConsumerId()
 
-    FindPlacedOrder willFindOrder = { orderId, ConsumerId -> Option.of(placedOrder) }
-    FindPlacedOrder willNotFindOrder = { orderId, ConsumerId -> Option.none() }
+    FindPlacedOrder willFindOrder = { orderId -> Option.of(placedOrder) }
+    FindPlacedOrder willNotFindOrder = { orderId -> Option.none() }
     Consumers consumers = Stub()
 
     def 'should successfully cancel order if order was placed by consumer and consumer and order exist'() {
@@ -86,7 +80,7 @@ class CancellingOrderSpec extends Specification {
     }
 
     CancelOrderCommand command() {
-        return new CancelOrderCommand(consumerId, anyOrderId(), OrderCancellingReason.CancelledByConsumer)
+        return new CancelOrderCommand(consumerId, anyOrderId(), CancellationReason.ByConsumer)
     }
 
     void persistedConsumerWithPlacedOrder() {
@@ -96,7 +90,7 @@ class CancellingOrderSpec extends Specification {
     }
 
     void persistedConsumerWithoutPlacedOrders() {
-        Consumer consumer = consumer()
+        Consumer consumer = regularConsumer()
         consumers.findBy(consumerId) >> Option.of(consumer)
         consumers.publish(_ as ConsumerEvent) >> consumer
     }

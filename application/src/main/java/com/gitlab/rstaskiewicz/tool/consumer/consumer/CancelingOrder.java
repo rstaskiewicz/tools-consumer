@@ -30,7 +30,7 @@ public class CancelingOrder {
 
     public Try<Result> cancel(@NonNull CancelOrderCommand command) {
         return Try.of(() -> {
-            PlacedOrder placedOrder = find(command.getOrderId(), command.getConsumerId());
+            PlacedOrder placedOrder = find(command.getOrderId());
             Consumer consumer = find(command.getConsumerId());
             Either<OrderCancelingFailed, OrderCanceled> result = consumer.cancelOrder(placedOrder, command.getReason());
             return Match(result).of(
@@ -50,9 +50,9 @@ public class CancelingOrder {
         return Result.Rejection;
     }
 
-    private PlacedOrder find(OrderId orderId, ConsumerId consumerId) {
-        return findPlacedOrder.findBy(orderId, consumerId)
-                .getOrElseThrow(() -> new AggregateRootNotFoundException("Cannot find order with id: " + consumerId.getId()));
+    private PlacedOrder find(OrderId orderId) {
+        return findPlacedOrder.findPlacedOrder(orderId)
+                .getOrElseThrow(() -> new AggregateRootNotFoundException("Cannot find order with id: " + orderId.getId()));
     }
 
     private Consumer find(ConsumerId consumerId) {

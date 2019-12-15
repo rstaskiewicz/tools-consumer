@@ -40,10 +40,11 @@ public class Consumer {
 
     public Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder(OrderId orderId,
                                                                     SalesBranchId salesBranchId,
+                                                                    OrderTime orderTime,
                                                                     PaymentDeadline paymentDeadline) {
         var rejection = consumerCanPlaceOrder(salesBranchId);
         if (rejection.isEmpty()) {
-            var orderPlaced = OrderPlaced.now(consumer.getConsumerId(), orderId, salesBranchId, paymentDeadline);
+            var orderPlaced = OrderPlaced.now(consumer.getConsumerId(), orderId, salesBranchId, orderTime, paymentDeadline);
             if (orders.reachedMaximumDailyOrdersAfterPlacing(orderId)) {
                 return announceSuccess(events(
                         orderPlaced, MaximumNumberOfDailyOrdersReached.now(consumer.getConsumerId(), MAX_NUMBER_OF_DAILY_HOLDS)));
@@ -54,13 +55,13 @@ public class Consumer {
     }
 
     public Either<OrderCancelingFailed, OrderCanceled> cancelOrder(PlacedOrder order,
-                                                                   OrderCancellingReason cancellingReason) {
+                                                                   CancellationReason cancellingReason) {
         if (orders.contains(order)) {
             return announceSuccess(OrderCanceled.now(
-                    consumer.getConsumerId(), order.getOrderId(), order.getSalesBranchId(), cancellingReason));
+                    consumer.getConsumerId(), order.getOrderId(), order.getPlacedAt(), cancellingReason));
         }
         return announceFailure(OrderCancelingFailed.now(
-                withReason("Order was not placed by consumer"),consumer.getConsumerId(), order.getOrderId(), order.getSalesBranchId()));
+                withReason("Order was not placed by consumer"),consumer.getConsumerId(), order.getOrderId(), order.getPlacedAt()));
     }
 
     private Option<Rejection> consumerCanPlaceOrder(SalesBranchId salesBranchId) {

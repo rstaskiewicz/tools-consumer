@@ -6,4 +6,12 @@ jar.enabled = true
 dependencies {
     implementation project(':model')
     implementation project(':application')
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation project(':model').sourceSets.test.output
+
+    integrationTestRuntimeOnly 'com.h2database:h2'
 }

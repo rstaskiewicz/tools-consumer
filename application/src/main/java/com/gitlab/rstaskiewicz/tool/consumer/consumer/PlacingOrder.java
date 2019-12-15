@@ -29,7 +29,7 @@ public class PlacingOrder {
         return Try.of(() -> {
             Consumer consumer = find(command.getConsumerId());
             Either<OrderPlacingFailed, OrderPlacedEvents> result = consumer.placeOrder(
-                    command.getOrderId(), command.getSalesBranchId(), command.getPaymentDeadline());
+                    command.getOrderId(), command.getSalesBranchId(), command.getOrderTime(), command.getPaymentDeadline());
             return Match(result).of(
                     Case($Left($()), this::publishEvents),
                     Case($Right($()), this::publishEvents)

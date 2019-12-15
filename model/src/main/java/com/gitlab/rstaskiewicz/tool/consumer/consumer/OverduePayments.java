@@ -2,11 +2,13 @@ package com.gitlab.rstaskiewicz.tool.consumer.consumer;
 
 import com.gitlab.rstaskiewicz.tool.consumer.order.OrderId;
 import com.gitlab.rstaskiewicz.tool.consumer.salesbranch.SalesBranchId;
-import io.vavr.collection.HashSet;
-import io.vavr.collection.Map;
-import io.vavr.collection.Set;
 import lombok.NonNull;
 import lombok.Value;
+
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 
 @Value
@@ -17,6 +19,6 @@ class OverduePayments {
     @NonNull Map<SalesBranchId, Set<OrderId>> overduePayments;
 
     int countAt(@NonNull SalesBranchId salesBranchId) {
-        return overduePayments.getOrElse(salesBranchId, HashSet.empty()).size();
+        return overduePayments.getOrDefault(salesBranchId, emptySet()).size();
     }
 }

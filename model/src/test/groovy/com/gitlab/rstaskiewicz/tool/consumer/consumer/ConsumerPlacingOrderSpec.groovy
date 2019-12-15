@@ -6,9 +6,10 @@ import spock.lang.Specification
 
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerEvent.OrderPlacedEvents
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerEvent.OrderPlacingFailed
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.actualTime
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.anyPaymentDeadline
 import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithOverduePaymentsAt
-import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithMaxNumberOfPlacedOrdersPerDay
+import static com.gitlab.rstaskiewicz.tool.consumer.consumer.ConsumerFixture.consumerWithPlacedOrders
 import static com.gitlab.rstaskiewicz.tool.consumer.order.OrderFixture.anyOrderId
 import static com.gitlab.rstaskiewicz.tool.consumer.salesbranch.SalesBranchFixture.anyBranchId
 
@@ -16,10 +17,10 @@ class ConsumerPlacingOrderSpec extends Specification {
 
     def 'consumer cannot place more than 3 orders in one day'() {
         given:
-            Consumer consumer = consumerWithMaxNumberOfPlacedOrdersPerDay(orders)
+            Consumer consumer = consumerWithPlacedOrders(orders)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
-                    anyOrderId(), anyBranchId(), anyPaymentDeadline())
+                    anyOrderId(), anyBranchId(), actualTime(), anyPaymentDeadline())
         then:
             placeOrder.isLeft()
             placeOrder.getLeft().reason == 'Consumer cannot place more orders today'
@@ -29,27 +30,27 @@ class ConsumerPlacingOrderSpec extends Specification {
 
     def 'consumer can place an order when he did not place more than 2 orders in one day'() {
         given:
-            Consumer consumer = consumerWithMaxNumberOfPlacedOrdersPerDay(orders)
+            Consumer consumer = consumerWithPlacedOrders(orders)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
-                    anyOrderId(), anyBranchId(), anyPaymentDeadline())
+                    anyOrderId(), anyBranchId(), actualTime(), anyPaymentDeadline())
         then:
             placeOrder.isRight()
         where:
             orders << [0, 1, 2]
     }
 
-    def 'consumer cannot place orders in sales branch anymore when he has at least two overdue payments there'() {
+    def 'consumer cannot place orders at sales branch anymore when he has at least two overdue payments there'() {
         given:
             SalesBranchId salesBranchId = anyBranchId()
         and:
             Consumer consumer = consumerWithOverduePaymentsAt(salesBranchId, overduePayments)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
-                    anyOrderId(), salesBranchId, anyPaymentDeadline())
+                    anyOrderId(), salesBranchId, actualTime(), anyPaymentDeadline())
         then:
             placeOrder.isLeft()
-            placeOrder.getLeft().reason == 'Consumer cannot place order in sales branch when there are overdue payments'
+            placeOrder.getLeft().reason == 'Consumer cannot place order at sales branch when there are overdue payments'
         where:
             overduePayments << [2, 4, 1000]
     }
@@ -62,21 +63,21 @@ class ConsumerPlacingOrderSpec extends Specification {
             Consumer consumer = consumerWithOverduePaymentsAt(salesBranchId, overduePayments)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
-                    anyOrderId(), differentSalesBranchId, anyPaymentDeadline())
+                    anyOrderId(), differentSalesBranchId, actualTime(), anyPaymentDeadline())
         then:
             placeOrder.isRight()
         where:
             overduePayments << [2, 4, 1000]
     }
 
-    def 'consumer can place an order in sales branch when he does not have 2 overdue payments'() {
+    def 'consumer can place an order at sales branch when he does not have 2 overdue payments'() {
         given:
             SalesBranchId salesBranchId = anyBranchId()
         and:
             Consumer consumer = consumerWithOverduePaymentsAt(salesBranchId, overduePayments)
         when:
             Either<OrderPlacingFailed, OrderPlacedEvents> placeOrder = consumer.placeOrder(
-                    anyOrderId(), salesBranchId, anyPaymentDeadline())
+                    anyOrderId(), salesBranchId, actualTime(), anyPaymentDeadline())
         then:
             placeOrder.isRight()
         where:

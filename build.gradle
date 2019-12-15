@@ -1,7 +1,8 @@
 plugins {
     id 'idea'
     id 'announce'
-    id 'org.springframework.boot' version '2.2.0.RELEASE' apply false
+    id 'java'
+    id 'org.springframework.boot' version '2.2.2.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.8.RELEASE' apply false
     id 'com.bmuschko.docker-remote-api' version '5.2.0' apply false
 }
