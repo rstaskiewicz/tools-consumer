@@ -46,7 +46,9 @@ class ConsumersDatabaseRepository implements Consumers {
         Consumer result = Match(event).of(
                 Case($(instanceOf(ConsumerCreated.class)), this::createNewConsumer),
                 Case($(), this::handleNextEvent));
-        events.publish(event);
+        if (!(event instanceof ConsumerCreated)) {
+            events.publish(event);
+        }
         return result;
     }
 

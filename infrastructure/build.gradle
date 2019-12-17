@@ -8,10 +8,13 @@ dependencies {
     implementation project(':application')
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.cloud:spring-cloud-stream'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
 
     runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation project(':model').sourceSets.test.output
 
+    integrationTestImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
     integrationTestRuntimeOnly 'com.h2database:h2'
 }

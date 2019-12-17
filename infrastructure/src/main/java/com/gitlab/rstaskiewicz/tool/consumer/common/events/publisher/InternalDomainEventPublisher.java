@@ -1,4 +1,4 @@
-package com.gitlab.rstaskiewicz.tool.consumer.common.events;
+package com.gitlab.rstaskiewicz.tool.consumer.common.events.publisher;
 
 import com.gitlab.rstaskiewicz.tool.consumer.common.event.DomainEvent;
 import com.gitlab.rstaskiewicz.tool.consumer.common.event.DomainEvents;
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JustForwardDomainEventPublisher implements DomainEvents {
+class InternalDomainEventPublisher implements DomainEvents {
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public void publish(DomainEvent event) {
-        applicationEventPublisher.publishEvent(event);
+        publisher.publishEvent(event);
     }
 }

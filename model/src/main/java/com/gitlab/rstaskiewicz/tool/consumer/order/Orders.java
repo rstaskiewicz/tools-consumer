@@ -2,7 +2,7 @@ package com.gitlab.rstaskiewicz.tool.consumer.order;
 
 import io.vavr.control.Option;
 
-interface Orders {
+public interface Orders {
 
     Option<Order> findBy(OrderId orderId);
 

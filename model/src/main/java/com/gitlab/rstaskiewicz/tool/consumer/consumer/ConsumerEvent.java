@@ -19,24 +19,34 @@ public interface ConsumerEvent extends DomainEvent {
         return new ConsumerId(getConsumerId());
     }
 
+    default UUID getAggregateId() {
+        return getConsumerId();
+    }
+
     default List<ConsumerEvent> normalize() {
         return List.of(this);
     }
 
     @Value
     class ConsumerCreated implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "consumer-created";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull UUID consumerId;
 
-        static ConsumerCreated now(ConsumerId consumerId) {
-            return new ConsumerCreated(Instant.now(), consumerId.getId());
+        public String getType() {
+            return TYPE;
         }
     }
 
     @Value
     class OrderPlaced implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "order-placed";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull UUID consumerId;
         @NonNull UUID orderId;
@@ -50,6 +60,7 @@ public interface ConsumerEvent extends DomainEvent {
                                OrderTime orderTime,
                                PaymentDeadline paymentDeadline) {
             return new OrderPlaced(
+                    UUID.randomUUID(),
                     Instant.now(),
                     consumerId.getId(),
                     orderId.getId(),
@@ -57,11 +68,18 @@ public interface ConsumerEvent extends DomainEvent {
                     orderTime.getWhen(),
                     paymentDeadline.getTill());
         }
+
+        public String getType() {
+            return TYPE;
+        }
     }
 
     @Value
     class OrderPlacedEvents implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "order-placed-events";
+
+        @NonNull UUID eventId;
         @NonNull UUID consumerId;
         @NonNull OrderPlaced orderPlaced;
         @NonNull Option<MaximumNumberOfDailyOrdersReached> maximumNumberOfDailyOrdersReached;
@@ -72,36 +90,51 @@ public interface ConsumerEvent extends DomainEvent {
         }
 
         static OrderPlacedEvents events(OrderPlaced orderPlaced) {
-            return new OrderPlacedEvents(orderPlaced.consumerId, orderPlaced, Option.none());
+            return new OrderPlacedEvents(UUID.randomUUID(), orderPlaced.consumerId, orderPlaced, Option.none());
         }
 
         static OrderPlacedEvents events(OrderPlaced orderPlaced, MaximumNumberOfDailyOrdersReached maximumNumberOfDailyOrdersReached) {
-            return new OrderPlacedEvents(orderPlaced.consumerId, orderPlaced, Option.of(maximumNumberOfDailyOrdersReached));
+            return new OrderPlacedEvents(UUID.randomUUID(), orderPlaced.consumerId, orderPlaced, Option.of(maximumNumberOfDailyOrdersReached));
         }
 
         public List<ConsumerEvent> normalize() {
             return List.<ConsumerEvent>of(orderPlaced).appendAll(maximumNumberOfDailyOrdersReached.toList());
         }
+
+        public String getType() {
+            return TYPE;
+        }
     }
 
     @Value
     class MaximumNumberOfDailyOrdersReached implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "max-num-of-daily-orders-reached";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull UUID consumerId;
         int numberOfOrders;
 
         static MaximumNumberOfDailyOrdersReached now(ConsumerId consumerId, int numberOfOrders) {
             return new MaximumNumberOfDailyOrdersReached(
+                    UUID.randomUUID(),
                     Instant.now(),
                     consumerId.getId(),
                     numberOfOrders);
+        }
+
+        public String getType() {
+            return TYPE;
         }
     }
 
     @Value
     class OrderPlacingFailed implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "order-placing-failed";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull String reason;
         @NonNull UUID consumerId;
@@ -110,17 +143,25 @@ public interface ConsumerEvent extends DomainEvent {
 
         static OrderPlacingFailed now(Rejection rejection, ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId) {
             return new OrderPlacingFailed(
+                    UUID.randomUUID(),
                     Instant.now(),
                     rejection.getReason().getReason(),
                     consumerId.getId(),
                     orderId.getId(),
                     salesBranchId.getId());
         }
+
+        public String getType() {
+            return TYPE;
+        }
     }
 
     @Value
     class OrderCanceled implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "order-cancelled";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull UUID consumerId;
         @NonNull UUID orderId;
@@ -129,17 +170,25 @@ public interface ConsumerEvent extends DomainEvent {
 
         static OrderCanceled now(ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId, CancellationReason reason) {
             return new OrderCanceled(
+                    UUID.randomUUID(),
                     Instant.now(),
                     consumerId.getId(),
                     orderId.getId(),
                     salesBranchId.getId(),
                     reason);
         }
+
+        public String getType() {
+            return TYPE;
+        }
     }
 
     @Value
     class OrderCancelingFailed implements ConsumerEvent {
-        @NonNull UUID eventId = UUID.randomUUID();
+
+        public static final String TYPE = "order-cancelling-failed";
+
+        @NonNull UUID eventId;
         @NonNull Instant when;
         @NonNull String reason;
         @NonNull UUID consumerId;
@@ -148,11 +197,16 @@ public interface ConsumerEvent extends DomainEvent {
 
         static OrderCancelingFailed now(Rejection rejection, ConsumerId consumerId, OrderId orderId, SalesBranchId salesBranchId) {
             return new OrderCancelingFailed(
+                    UUID.randomUUID(),
                     Instant.now(),
                     rejection.getReason().getReason(),
                     consumerId.getId(),
                     orderId.getId(),
                     salesBranchId.getId());
+        }
+
+        public String getType() {
+            return TYPE;
         }
     }
 }

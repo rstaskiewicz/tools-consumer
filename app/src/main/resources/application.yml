@@ -6,3 +6,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/consumer
     username: admin
     password: admin
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        consumer-event-out:
+          destination: consumer-events
